@@ -118,7 +118,7 @@ function deadlineCloseJob() {
     const nowStr = formatDateForDisplay_(new Date());
 
     const subject = `${title} ${nowStr} 已關閉填單`;
-    const body = `您的表單「${title}」已於 ${nowStr} 達到設定期限，系統已自動關閉其回應功能。\n\n管理連結：${form.getEditUrl()}`;
+    const body = `您的表單「${title}」已於 ${nowStr} 達到設定期限，系統已自動關閉其回應功能。\n\n管理連結：\n${form.getEditUrl()}`;
 
     MailApp.sendEmail({
       to: email,
@@ -174,7 +174,7 @@ function sendTestEmail() {
   MailApp.sendEmail({
     to: email,
     subject: `測試信：${title}`,
-    body: `這是一封測試郵件，確認您的表單「${title}」可以正常發送通知。\n\n管理連結：${form.getEditUrl()}`
+    body: `這是一封測試郵件，確認您的表單「${title}」可以正常發送通知。\n\n管理連結：\n${form.getEditUrl()}`
   });
 
   return `已發送測試信至：${email}`;
