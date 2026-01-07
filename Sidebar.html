@@ -1,0 +1,379 @@
+<!-- =========================
+     Sidebar.html
+     - 顯示狀態
+     - 設定/取消期限
+     - 立即開/關回應
+     注意：datetime-local 會用「你電腦的時區」顯示
+     後端會以 Script 時區顯示狀態文字
+========================= -->
+<!doctype html>
+<html>
+
+<head>
+  <base target="_top">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap");
+
+    :root {
+      --bg: #f4efe7;
+      --bg-ink: #f7f3ed;
+      --panel: #fffdf9;
+      --ink: #231f1a;
+      --muted: #6a6156;
+      --accent: #1d7a6a;
+      --accent-2: #d29a3d;
+      --border: #e2d6c7;
+      --shadow: 0 16px 28px rgba(36, 28, 20, 0.12);
+      --radius: 16px;
+      --space-1: 8px;
+      --space-2: 12px;
+      --space-3: 16px;
+      --space-4: 22px;
+      --space-5: 28px;
+      --content-width: 420px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Manrope", "Noto Sans TC", sans-serif;
+      margin: 0;
+      padding: 20px;
+      width: min(100%, var(--content-width));
+      margin-inline: auto;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% -10%, rgba(210, 154, 61, 0.16), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(29, 122, 106, 0.12), transparent 50%),
+        repeating-linear-gradient(135deg, rgba(35, 31, 26, 0.05), rgba(35, 31, 26, 0.05) 1px, transparent 1px, transparent 12px),
+        var(--bg);
+    }
+
+    .title {
+      font-family: "Fraunces", "Noto Serif TC", serif;
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: 0.3px;
+      margin-bottom: var(--space-2);
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      display: block;
+      margin-top: 6px;
+    }
+
+    .row {
+      margin: var(--space-3) 0;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: var(--space-1);
+      color: var(--ink);
+    }
+
+    .label-stack {
+      display: grid;
+      gap: 4px;
+    }
+
+    .label-main {
+      font-size: 15px;
+      letter-spacing: 0.2px;
+    }
+
+    .label-sub {
+      font-size: 12.5px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 15px;
+      background: #fff;
+      color: var(--ink);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.3px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: rgba(29, 122, 106, 0.7);
+      box-shadow: 0 0 0 3px rgba(29, 122, 106, 0.15);
+    }
+
+    .button-grid {
+      display: grid;
+      gap: var(--space-2);
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+
+    button {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--ink);
+      transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      box-shadow: 0 6px 12px rgba(35, 31, 26, 0.08);
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #1f8574, #166458);
+      color: #fff;
+      border-color: #156054;
+      box-shadow: 0 8px 16px rgba(21, 96, 84, 0.28);
+    }
+
+    button.secondary {
+      border-color: rgba(210, 154, 61, 0.8);
+      color: #7a4e0f;
+      background: #fff7ea;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button:hover {
+      border-color: rgba(29, 122, 106, 0.45);
+      box-shadow: 0 10px 18px rgba(35, 31, 26, 0.12);
+    }
+
+    button.primary:hover {
+      border-color: #0f4b41;
+      box-shadow: 0 12px 22px rgba(21, 96, 84, 0.35);
+    }
+
+    button:focus-visible {
+      outline: 2px solid rgba(29, 122, 106, 0.4);
+      outline-offset: 2px;
+    }
+
+    .status {
+      padding: 0;
+      font-size: 15px;
+      line-height: 1.75;
+      letter-spacing: 0.2px;
+      position: relative;
+      font-variant-numeric: tabular-nums;
+      display: grid;
+      gap: 12px;
+    }
+
+    .status.plain {
+      display: block;
+      white-space: pre-line;
+    }
+
+    .status-item {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      column-gap: 10px;
+      row-gap: 2px;
+      align-items: start;
+    }
+
+    .status-item.single {
+      align-items: center;
+      row-gap: 0;
+    }
+
+    .status-item.dual .status-icon {
+      grid-row: span 2;
+    }
+
+    .status-icon {
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    .status-label {
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.3px;
+    }
+
+    .status-value {
+      color: var(--ink);
+      word-break: break-word;
+    }
+
+    .status-strong {
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .hr {
+      height: 1px;
+      background: var(--border);
+      margin: var(--space-4) 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="title">期限管理</div>
+
+  <div class="row status" id="status">讀取中…</div>
+
+  <div class="hr"></div>
+
+  <div class="row">
+    <label for="dt" class="label-stack">
+      <span class="label-main">截止時間</span>
+      <span class="label-sub">選擇後按「設定/更新期限」</span>
+    </label>
+    <input id="dt" type="datetime-local" />
+    <div class="muted" id="tzNote"></div>
+  </div>
+
+  <div class="row button-grid">
+    <button class="primary" onclick="saveDeadline()">設定/更新期限</button>
+    <button class="secondary" onclick="cancelDeadline()">取消期限</button>
+  </div>
+
+  <div class="row button-grid">
+    <button onclick="closeNow()">立即關閉回應</button>
+    <button onclick="openNow()">立即開啟回應</button>
+    <button onclick="refresh()">重新整理狀態</button>
+  </div>
+
+  <div class="hr"></div>
+  <div class="row button-grid">
+    <button onclick="sendTestEmail()">測試發信</button>
+  </div>
+
+  <script>
+    function setStatusText(lines) {
+      const status = document.getElementById("status");
+      status.classList.add("plain");
+      status.textContent = lines.join("\n");
+    }
+
+    function renderStatus(s) {
+      const acceptingLine = s.accepting ? "接受回應中" : "已關閉回應";
+
+      let deadlineLabel = "未設定期限";
+      let deadlineValue = "";
+      if (s.deadlineIso) {
+        deadlineLabel = s.isExpired ? "已過期限：" : "截止：";
+        deadlineValue = s.deadlineText;
+      }
+
+      const nowLine = s.nowText;
+      const tzLine = s.scriptTimeZone;
+
+      const status = document.getElementById("status");
+      status.classList.remove("plain");
+      const deadlineIcon = s.deadlineIso ? (s.isExpired ? "❌" : "⏰") : "⏰";
+      const deadlineBlock = s.deadlineIso
+        ? `<div class="status-item dual"><span class="status-icon">${deadlineIcon}</span><span class="status-label">${deadlineLabel}</span><span class="status-value">${deadlineValue}</span></div>`
+        : `<div class="status-item single"><span class="status-icon">${deadlineIcon}</span><span class="status-label status-strong">${deadlineLabel}</span></div>`;
+
+      status.innerHTML = [
+        `<div class="status-item single"><span class="status-icon">${s.accepting ? "✅" : "⛔"}</span><span class="status-label status-strong">${acceptingLine}</span></div>`,
+        deadlineBlock,
+        `<div class="status-item dual"><span class="status-icon">🕒</span><span class="status-label">現在：</span><span class="status-value">${nowLine}</span></div>`,
+        `<div class="status-item dual"><span class="status-icon">🌏</span><span class="status-label">Script 時區：</span><span class="status-value">${tzLine}</span></div>`
+      ].join("");
+
+      document.getElementById("tzNote").textContent =
+        "提示：此輸入框（datetime-local）會使用你電腦的時區顯示；狀態文字用 Apps Script 專案時區顯示。";
+
+      // 若已有期限，把 input 回填（用本地時區顯示）
+      if (s.deadlineIso) {
+        const d = new Date(s.deadlineIso);
+        document.getElementById("dt").value = toDatetimeLocalValue(d);
+      }
+    }
+
+    function toDatetimeLocalValue(d) {
+      const pad = (n) => String(n).padStart(2, "0");
+      // 注意：使用本地時間
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function showLoading() {
+      document.getElementById("status").textContent = "⏳ 更新中...";
+    }
+
+    function refresh() {
+      showLoading();
+      google.script.run
+        .withSuccessHandler(renderStatus)
+        .withFailureHandler((err) => setStatusText(["❌ 讀取失敗", String(err.message || err)]))
+        .getStatus();
+    }
+
+    function saveDeadline() {
+      const v = document.getElementById("dt").value; // "YYYY-MM-DDTHH:mm"
+      if (!v) return alert("請先選擇截止時間");
+
+      // v 是本地時間字串，new Date(v) 會轉成對應的本地時間，再輸出 ISO (UTC)
+      const iso = new Date(v).toISOString();
+
+      showLoading();
+
+      google.script.run
+        .withSuccessHandler(renderStatus)
+        .withFailureHandler((err) => alert("設定失敗：" + (err.message || err)))
+        .setDeadline(iso);
+    }
+
+    function cancelDeadline() {
+      showLoading();
+      google.script.run
+        .withSuccessHandler(renderStatus)
+        .withFailureHandler((err) => alert("取消失敗：" + (err.message || err)))
+        .cancelDeadline();
+    }
+
+    function closeNow() {
+      showLoading();
+      google.script.run
+        .withSuccessHandler(renderStatus)
+        .withFailureHandler((err) => alert("關閉失敗：" + (err.message || err)))
+        .closeNow();
+    }
+
+    function openNow() {
+      showLoading();
+      google.script.run
+        .withSuccessHandler(renderStatus)
+        .withFailureHandler((err) => alert("開啟失敗：" + (err.message || err)))
+        .openNow();
+    }
+
+    function sendTestEmail() {
+      showLoading();
+      google.script.run
+        .withSuccessHandler((msg) => { alert(msg); refresh(); })
+        .withFailureHandler((err) => alert("發信失敗：" + (err.message || err)))
+        .sendTestEmail();
+    }
+
+    refresh();
+  </script>
+</body>
+
+</html>
