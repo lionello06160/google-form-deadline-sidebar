@@ -177,7 +177,7 @@
       position: relative;
       font-variant-numeric: tabular-nums;
       display: grid;
-      gap: 12px;
+      gap: 14px;
     }
 
     .status.plain {
@@ -185,21 +185,15 @@
       white-space: pre-line;
     }
 
-    .status-item {
+    .status-block {
       display: grid;
-      grid-template-columns: 24px 1fr;
-      column-gap: 10px;
-      row-gap: 2px;
-      align-items: start;
+      gap: 2px;
     }
 
-    .status-item.single {
+    .status-head {
+      display: flex;
       align-items: center;
-      row-gap: 0;
-    }
-
-    .status-item.dual .status-icon {
-      grid-row: span 2;
+      gap: 8px;
     }
 
     .status-icon {
@@ -221,6 +215,12 @@
     .status-strong {
       font-weight: 700;
       color: var(--ink);
+    }
+
+    .status-body {
+      padding-left: 32px;
+      color: var(--ink);
+      word-break: break-word;
     }
 
     .hr {
@@ -287,14 +287,14 @@
       status.classList.remove("plain");
       const deadlineIcon = s.deadlineIso ? (s.isExpired ? "❌" : "⏰") : "⏰";
       const deadlineBlock = s.deadlineIso
-        ? `<div class="status-item dual"><span class="status-icon">${deadlineIcon}</span><span class="status-label">${deadlineLabel}</span><span class="status-value">${deadlineValue}</span></div>`
-        : `<div class="status-item single"><span class="status-icon">${deadlineIcon}</span><span class="status-label status-strong">${deadlineLabel}</span></div>`;
+        ? `<div class="status-block"><div class="status-head"><span class="status-icon">${deadlineIcon}</span><span class="status-label">${deadlineLabel}</span></div><div class="status-body">${deadlineValue}</div></div>`
+        : `<div class="status-block"><div class="status-head"><span class="status-icon">${deadlineIcon}</span><span class="status-label status-strong">${deadlineLabel}</span></div></div>`;
 
       status.innerHTML = [
-        `<div class="status-item single"><span class="status-icon">${s.accepting ? "✅" : "⛔"}</span><span class="status-label status-strong">${acceptingLine}</span></div>`,
+        `<div class="status-block"><div class="status-head"><span class="status-icon">${s.accepting ? "✅" : "⛔"}</span><span class="status-label status-strong">${acceptingLine}</span></div></div>`,
         deadlineBlock,
-        `<div class="status-item dual"><span class="status-icon">🕒</span><span class="status-label">現在：</span><span class="status-value">${nowLine}</span></div>`,
-        `<div class="status-item dual"><span class="status-icon">🌏</span><span class="status-label">Script 時區：</span><span class="status-value">${tzLine}</span></div>`
+        `<div class="status-block"><div class="status-head"><span class="status-icon">🕒</span><span class="status-label">現在：</span></div><div class="status-body">${nowLine}</div></div>`,
+        `<div class="status-block"><div class="status-head"><span class="status-icon">🌏</span><span class="status-label">Script 時區：</span></div><div class="status-body">${tzLine}</div></div>`
       ].join("");
 
       document.getElementById("tzNote").textContent =
