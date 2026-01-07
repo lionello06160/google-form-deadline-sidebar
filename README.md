@@ -1,4 +1,4 @@
-# rolando
+# google-form-deadline-sidebar
 
 Sidebar UI for deadline management in Google Apps Script.
 
